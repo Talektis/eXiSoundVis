@@ -952,17 +952,51 @@ void USoundVisualization::SV_GetFrequencyValues(USoundWave* _SoundWave, TArray<f
 {
 	if (_SoundWave && _Frequencies.Num() > 0)
 	{
-		F16 = _Frequencies[(int32)(16 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
-		F32 = _Frequencies[(int32)(32 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
-		F64 = _Frequencies[(int32)(64 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
-		F128 = _Frequencies[(int32)(128 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
-		F256 = _Frequencies[(int32)(256 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
-		F512 = _Frequencies[(int32)(512 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
-		F1000 = _Frequencies[(int32)(1000 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
-		F2000 = _Frequencies[(int32)(2000 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
-		F4000 = _Frequencies[(int32)(4000 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
-		F8000 = _Frequencies[(int32)(8000 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
-		F16000 = _Frequencies[(int32)(16000 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
+		int32 ArraySize = _Frequencies.Num();
+		if (ArraySize > (int32)(16 * _Frequencies.Num() * 2 / _SoundWave->SampleRate))
+			F16 = _Frequencies[(int32)(16 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
+		else
+			F16 = 0.0f;
+		if (ArraySize > (int32)(32 * _Frequencies.Num() * 2 / _SoundWave->SampleRate))
+			F32 = _Frequencies[(int32)(32 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
+		else
+			F32 = 0.0f;
+		if (ArraySize > (int32)(64 * _Frequencies.Num() * 2 / _SoundWave->SampleRate))
+			F64 = _Frequencies[(int32)(64 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
+		else
+			F64 = 0.0f;
+		if (ArraySize > (int32)(128 * _Frequencies.Num() * 2 / _SoundWave->SampleRate))
+			F128 = _Frequencies[(int32)(128 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
+		else
+			F128 = 0.0f;
+		if (ArraySize > (int32)(256 * _Frequencies.Num() * 2 / _SoundWave->SampleRate))
+			F256 = _Frequencies[(int32)(256 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
+		else
+			F256 = 0.0f;
+		if (ArraySize > (int32)(512 * _Frequencies.Num() * 2 / _SoundWave->SampleRate))
+			F512 = _Frequencies[(int32)(512 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
+		else
+			F512 = 0.0f;
+		if (ArraySize > (int32)(1000 * _Frequencies.Num() * 2 / _SoundWave->SampleRate))
+			F1000 = _Frequencies[(int32)(1000 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
+		else
+			F1000 = 0.0f;
+		if (ArraySize > (int32)(2000 * _Frequencies.Num() * 2 / _SoundWave->SampleRate))
+			F2000 = _Frequencies[(int32)(2000 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
+		else
+			F2000 = 0.0f;
+		if (ArraySize > (int32)(4000 * _Frequencies.Num() * 2 / _SoundWave->SampleRate))
+			F4000 = _Frequencies[(int32)(4000 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
+		else
+			F4000 = 0.0f;
+		if (ArraySize > (int32)(8000 * _Frequencies.Num() * 2 / _SoundWave->SampleRate))
+			F8000 = _Frequencies[(int32)(8000 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
+		else
+			F8000 = 0.0f;
+		if (ArraySize > (int32)(16000 * _Frequencies.Num() * 2 / _SoundWave->SampleRate))
+			F16000 = _Frequencies[(int32)(16000 * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
+		else
+			F16000 = 0.0f;
 	}
 	else
 	{
@@ -983,7 +1017,7 @@ void USoundVisualization::SV_GetFrequencyValues(USoundWave* _SoundWave, TArray<f
 // Function to get the nearly exact value of a given frequency
 void USoundVisualization::SV_GetSpecificFrequencyValue(USoundWave* _SoundWave, TArray<float> _Frequencies, int32 _WantedFrequency, float& _FrequencyValue)
 {
-	if (_SoundWave && _Frequencies.Num() > 0)
+	if (_SoundWave && _Frequencies.Num() > 0 && (int32)(_WantedFrequency * _Frequencies.Num() * 2 / _SoundWave->SampleRate) < _Frequencies.Num())
 	{
 		_FrequencyValue = _Frequencies[(int32)(_WantedFrequency * _Frequencies.Num() * 2 / _SoundWave->SampleRate)];
 	}
@@ -1005,10 +1039,21 @@ void USoundVisualization::SV_GetAverageBassValue(USoundWave* _SoundWave, TArray<
 void USoundVisualization::SV_GetAverageFrequencyValueInRange(USoundWave* _SoundWave, TArray<float> _Frequencies, int32 _StartFrequence, int32 _EndFrequence, float& _AverageFrequency)
 {
 	if (_StartFrequence >= _EndFrequence || _StartFrequence < 20 || _EndFrequence > 22000)
+	{
+		_AverageFrequency = 0.0f;
 		return;
+	}
+		
 
 	int32 FStart = (int32)(_StartFrequence  * _Frequencies.Num() * 2 / _SoundWave->SampleRate);
 	int32 FEnd = (int32)(_EndFrequence * _Frequencies.Num() * 2 / _SoundWave->SampleRate);
+
+	if (FStart < 0 || FEnd >= _Frequencies.Num())
+	{
+		_AverageFrequency = 0.0f;
+		return;
+	}
+	;
 
 	int32 NumberOfFrequencies = 0;
 
