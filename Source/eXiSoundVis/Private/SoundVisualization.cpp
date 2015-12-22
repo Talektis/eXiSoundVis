@@ -1053,7 +1053,6 @@ void USoundVisualization::SV_GetAverageFrequencyValueInRange(USoundWave* _SoundW
 		_AverageFrequency = 0.0f;
 		return;
 	}
-	;
 
 	int32 NumberOfFrequencies = 0;
 
