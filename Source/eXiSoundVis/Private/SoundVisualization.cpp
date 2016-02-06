@@ -384,65 +384,39 @@ void USoundVisualization::New_CalculateFrequencySpectrum(USoundWave* _SoundWave,
 
 	if (NumChannels > 0)
 	{
-		// For 0.1 seconds and 44100 samples per second, this would be 4410 samples, half of them will be returned by FFT, so 2205 array size
-		/*
-		int32 NumFreq = 0;
-
-		int32 Temp = ((int32)(_SoundWave->SampleRate * _Duration)) % 2;
-
-		if (Temp > 0)
-		{
-		NumFreq = 1;
-		}
-
-		NumFreq += (int32)((_SoundWave->SampleRate * _Duration) / 2);
-
-		_OutFrequencies.AddZeroed(NumFreq);*/
-
 		if (PCMSampleBuffer != NULL)
 		{
 			float FBufferSize = _Duration * _SoundWave->SampleRate * _SoundWave->NumChannels;
 
 			const uint32 BufferSize = FMath::FloorToInt(FBufferSize) * 2; // Duration * SampleRate * NumChannels * 2
 
-																		  // Get first and last sample
+			// The first sample is just the StartTime * SampleRate
 			int32 FirstSample = _SoundWave->SampleRate * _StartTime;
+
+			// The last sample is the SampleRate times StartTime plus the duration we gave it
 			int32 LastSample = _SoundWave->SampleRate * (_StartTime + _Duration);
 
 			// Get Maximum amount of samples in this song
 			int32 SampleCount = _SoundWave->RawPCMDataSize / (2 * NumChannels);
 
+			// An early check if we can create a Sample window
 			FirstSample = FMath::Min(SampleCount, FirstSample);
 			LastSample = FMath::Min(SampleCount, LastSample);
 
 			// Actual samples we gonna read
 			int32 SamplesToRead = LastSample - FirstSample;
 
+			// This is mostly gonna be 0 if the First and LastSample are equal SampleCount
 			if (SamplesToRead > 0)
 			{
-				// Shift the window enough so that we get a power of 2
+				// Shift the window enough so that we get a PowerOfTwo with which a FFT is better to handle
 				int32 PoT = 2;
-				while (SamplesToRead > PoT) PoT *= 2;
 
-				FirstSample = FMath::Max(0, FirstSample - (PoT - SamplesToRead) / 2);
+				while (SamplesToRead > PoT)
+					PoT *= 2;
 
+				// Save the new SamplesToRead
 				SamplesToRead = PoT;
-
-				// With this equation, LastSample is either Equal or greater than SamplesToRead 
-				LastSample = FirstSample + SamplesToRead;
-
-				// If we have more samples than the SampleCount (due to PoT)
-				if (LastSample > SampleCount)
-				{
-					// Regarding above comments, this will either 0 or >0, so FirstSample can't be negative
-					FirstSample = LastSample - SamplesToRead;
-				}
-				// This makes 0 sense! We can't get a negative FirstSample
-				if (FirstSample < 0)
-				{
-					// If we get to this point we can't create a reasonable window so just give up
-					return;
-				}
 
 				kiss_fft_cpx* buf[2] = { 0 };
 				kiss_fft_cpx* out[2] = { 0 };
@@ -456,38 +430,43 @@ void USoundVisualization::New_CalculateFrequencySpectrum(USoundWave* _SoundWave,
 				// Save the Samples Data wie have to the SamplePtr
 				int16* SamplePtr = reinterpret_cast<int16*>(PCMSampleBuffer);
 
+				// Allocate enough space for the FFT
 				for (int32 ChannelIndex = 0; ChannelIndex < NumChannels; ChannelIndex++)
 				{
 					buf[ChannelIndex] = (kiss_fft_cpx *)KISS_FFT_MALLOC(sizeof(kiss_fft_cpx) * SamplesToRead);
 					out[ChannelIndex] = (kiss_fft_cpx *)KISS_FFT_MALLOC(sizeof(kiss_fft_cpx) * SamplesToRead);
 				}
 
+				// Shift the SamplePointer forward so we start at the current "first" sample
 				SamplePtr += (FirstSample * NumChannels);
 
+				// We could limit SamplesToRead to be either a PowerOfTwo or the remaining Samples to not go out of bounds
+				// But as PowerOfTwo is better to work with in terms of FFT, we just make sure that we fill the rest of the
+				// Array with 0.f when we hit the SamplesCount
 				for (int32 SampleIndex = 0; SampleIndex < SamplesToRead; ++SampleIndex)
 				{
-					//if (SampleIndex + FirstSample <= SampleCount)
-					//{
 					for (int32 ChannelIndex = 0; ChannelIndex < NumChannels; ChannelIndex++)
 					{
-						// Use Window function to get a better result for the Data (Hann Window)
-						buf[ChannelIndex][SampleIndex].r = GetFFTInValue(*SamplePtr, SampleIndex, SamplesToRead);
-						buf[ChannelIndex][SampleIndex].i = 0.f;
+						// Check if the Pointer is Valid and we do not go out of bounds for the SampleCount
+						if ((SampleIndex + FirstSample < SampleCount) && SamplePtr)
+						{
+							// Use Window function to get a better result for the Data (Hann Window)
+							buf[ChannelIndex][SampleIndex].r = GetFFTInValue(*SamplePtr, SampleIndex, SamplesToRead);
+							buf[ChannelIndex][SampleIndex].i = 0.f;
+						}
+						else
+						{
+							// Use Window function to get a better result for the Data (Hann Window)
+							buf[ChannelIndex][SampleIndex].r = 0.f;
+							buf[ChannelIndex][SampleIndex].i = 0.f;
+						}
 
+						// Take the next Sample
 						SamplePtr++;
 					}
-					//	}
-					/*else
-					{
-					for (int32 ChannelIndex = 0; ChannelIndex < NumChannels; ChannelIndex++)
-					{
-					// Fill with zeros
-					buf[ChannelIndex][SampleIndex].r = 0.f;
-					buf[ChannelIndex][SampleIndex].i = 0.f;
-					}
-					}*/
 				}
 
+				// Apply the FFT for both channels
 				for (int32 ChannelIndex = 0; ChannelIndex < NumChannels; ChannelIndex++)
 				{
 					if (buf[ChannelIndex])
@@ -496,6 +475,8 @@ void USoundVisualization::New_CalculateFrequencySpectrum(USoundWave* _SoundWave,
 					}
 				}
 
+				// Make the OutFrequencies only half the size, because FFT uses "SamplesToRead" Real numbers and splits them
+				// into ("SamplesToRead" / 2) Real and ("SamplesToRead" / 2) imaginary numbers
 				_OutFrequencies.AddZeroed(SamplesToRead / 2);
 
 				for (int32 SampleIndex = 0; SampleIndex < SamplesToRead / 2; ++SampleIndex)
@@ -506,6 +487,7 @@ void USoundVisualization::New_CalculateFrequencySpectrum(USoundWave* _SoundWave,
 					{
 						if (out[ChannelIndex])
 						{
+							// With this we get the actual Frequency value for the frequencies from 0hz to ~22000hz
 							ChannelSum += FMath::Sqrt(FMath::Square(out[ChannelIndex][SampleIndex].r) + FMath::Square(out[ChannelIndex][SampleIndex].i));
 						}
 					}
@@ -513,7 +495,9 @@ void USoundVisualization::New_CalculateFrequencySpectrum(USoundWave* _SoundWave,
 					_OutFrequencies[SampleIndex] = ChannelSum / NumChannels;
 				}
 
+				// Make sure to free up the FFT stuff
 				KISS_FFT_FREE(stf);
+
 				for (int32 ChannelIndex = 0; ChannelIndex < NumChannels; ++ChannelIndex)
 				{
 					if (buf[ChannelIndex])
