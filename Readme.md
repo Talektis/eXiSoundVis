@@ -76,7 +76,7 @@ When cooking, make sure to add the plugin to your projects dependencies!
 Example project
 ---------------
 
-Click [here](http://87.106.80.179/Downloads/Tutorial.rar)!
+Click [here](http://exi.bnslv.de/Downloads/Tutorial.rar)!
 
 
 License
