@@ -1,14 +1,14 @@
 using UnrealBuildTool;
 using System.IO;
- 
+
 public class eXiSoundVis : ModuleRules
 {
-    public eXiSoundVis(TargetInfo Target)
-    {
-        PrivateIncludePaths.AddRange(new string[] { "eXiSoundVis/Private" });
-        PublicIncludePaths.AddRange(new string[] { "eXiSoundVis/Public" });
- 
-        PublicDependencyModuleNames.AddRange(new string[] { "Engine", "Core", "CoreUObject", "InputCore", "RHI", "Kiss_FFT" });
+	public eXiSoundVis(TargetInfo Target)
+	{
+		PrivateIncludePaths.AddRange(new string[] {	"eXiSoundVis/Private" });
+		PublicIncludePaths.AddRange(new string[] { "eXiSoundVis/Public" });
+		
+		PublicDependencyModuleNames.AddRange(new string[] { "Engine", "Core", "CoreUObject", "InputCore", "RHI", "Kiss_FFT" });
 
         if (Target.Platform == UnrealTargetPlatform.Win64 || Target.Platform == UnrealTargetPlatform.Win32)
         {
@@ -22,5 +22,5 @@ public class eXiSoundVis : ModuleRules
         }
 
         AddThirdPartyPrivateStaticDependencies(Target, "Kiss_FFT");
-    }
+	}
 }
