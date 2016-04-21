@@ -1,8 +1,8 @@
 {
-	"Changelist" : 2934540,
-	"BuildId" : "7272455f-a010-4c80-81fd-6d3242801680",
+	"Changelist" : 2946394,
+	"BuildId" : "b43d5dae-de0b-4f31-93a1-baba067c5512",
 	"Modules" : 
 	{
-		"eXiSoundVis" : "UE4Editor-eXiSoundVis.dll"
+		"eXiSoundVis" : "UE4Editor-eXiSoundVis-2214.dll"
 	}
 }
