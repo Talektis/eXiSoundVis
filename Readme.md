@@ -61,6 +61,7 @@ To add it as an engine plugin you will need to unzip the module into the plugin 
 **8.** Now you can use the different frequency functions to get the values (for example if you want to get the values for bass, use 20 to 60 for SubBass and 60 to 250 for Bass. You can look up more on the internet.
 
 ![](http://puu.sh/opYtT/ed734b2396.png)
+
 **11.** You can find all functions available by going to the SoundVis category. They are explained in the [`SoundVisComponent.h`](https://github.com/eXifreXi/eXiSoundVis/blob/4.11/Source/eXiSoundVis/Public/SoundVisComponent.h) if you don't know how to use them:
 
 ![](http://puu.sh/oqNUm/317177f03d.png)
