@@ -40,6 +40,8 @@ To add it as an engine plugin you will need to unzip the module into the plugin 
 
 **5.** Load a sound via its **ABSOLUTE** path (only `.ogg` files). The Component has a `Delegate | OnFileLoadCompleted`, which gets called and passes the complete `USoundWave` Reference, once the process is over (ASYNC)!:
 
+![](http://puu.sh/oqN7E/72273737df.jpg)
+
 **5.1** NEVER CLOSE THE PROJECT WHILE LOADING A SOUND!
 
 **6.** Use the  Calculate Frequency Spectrum function after you loaded a sound to get an `Array of Frequency Values`, which represents the Frequencies from 0 to ~22000hz:
