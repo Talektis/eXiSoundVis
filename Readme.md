@@ -7,16 +7,16 @@ This is an Unreal Engine 4 plugin that loads `.ogg` files at runtime and analyze
 Feature list and pictures of available nodes:
 ---------------------------------------------
 
-* Load `.ogg` file from HardDrive
-* Load song names and file paths from HardDrive to display list of songs
-* Get frequency spectrum of current loaded song
-* Get specific frequency values of the analyzed current song
-* (OLD Plugin*) Get the amplitudes of the current loaded song
+* Load `.ogg` file from HDD
+* Load sound names and file paths from HDD to display list of sound
+* Get frequency spectrum of a loaded Sound
+* Get specific frequency values by using the calculated frequency spectrum
+* Start/Pause/Resume/Stop your Sound and Frequency Calculation through the build in Player
 
-(OLD Plugin*) This is still the code of the old Plugin. This will not work at it's current state, so make sure to not use it for now! 
-
-![](http://i.imgur.com/mJzto0J.png)
-
+![](http://puu.sh/opY1K/16c2b7b3c5.jpg)
+![](http://puu.sh/opYtT/ed734b2396.png)
+![](http://puu.sh/opYPr/e850f7baf0.jpg)
+![](http://puu.sh/oq0nd/c72fb3d48e.jpg)
 
 Installation
 -------------
@@ -24,49 +24,47 @@ Unzip the package into the Plugins directory of your game.
 To add it as an engine plugin you will need to unzip the module into the plugin directory under where you installed UE4.
 
 
-**1.** Download the [ZIP file](https://github.com/eXifreXi/eXiSoundVis/archive/master.zip).
+**1.** Download the [ZIP file](https://github.com/eXifreXi/eXiSoundVis/archive/4.11.zip).
 
 **2.** Create a `Plugins` folder in your game or engine directory and extract the plugin into it. It should look something like this:
 
-![](http://i.imgur.com/2Y8FvnW.png)
+![](http://puu.sh/oqMnc/f1f3292bc0.png)
 
 **3.** Open your project (and/or regenerate the Visual Studio files to have the plugin in your solution) and enable it in the plugin section:
 
-![](http://i.imgur.com/Fto3GJT.png)
+![](http://puu.sh/oqM0q/9a07b082eb.png)
 
-**4.** Wherever you want to use the plugin, construct a new `UObject` and use the `SoundVisualization` class coming with the plugin:
+**4.** To use the Plugin, add the `SoundVisComponent` to the Actor of your choice, which comes with the plugin:
 
-![](http://i.imgur.com/YVnozvI.png)
+![](http://puu.sh/oqMuE/10892c5bc2.png)
 
-**5.** Load a song via its **ABSOLUTE** path (only `.ogg` files):
+**5.** Load a sound via its **ABSOLUTE** path (only `.ogg` files). The Component has a `Delegate | OnFileLoadCompleted`, which gets called and passes the complete `USoundWave` Reference, once the process is over (ASYNC)!:
 
-![](http://i.imgur.com/w82PDun.jpg)
+![](http://puu.sh/oqN7E/72273737df.jpg)
 
-**6.** The loaded song is placed in the `CurrentSoundWave` `USoundWave`* that you can access via the contructed object:
+**5.1** NEVER CLOSE THE PROJECT WHILE LOADING A SOUND!
 
-![](http://i.imgur.com/QQbsfFz.png) 
+**6.** Use the  Calculate Frequency Spectrum function after you loaded a sound to get an `Array of Frequency Values`, which represents the Frequencies from 0 to ~22000hz:
 
-**6.1.** Make sure to only play this if you really loaded the song. Otherwise happy crashing...
+![](http://puu.sh/oqNpa/8a3b11650c.jpg)
 
-**7.** Use the **NEW** Calculate Frequency Spectrum function after you loaded a song to get an Array of Frequency Values to represent the Frequencies from 0 to ~22000hz:
+**6.1** THIS ONLY WORKS WITH LOADED AND DECOMPRESSED .ogg FILES!
 
-![](http://i.imgur.com/yCktubx.png)
+**7.** Since this only analyzes one small segment of the Sound and we don't want ugly `Delay-Loops`, use these functions to Start/Pause/Resume/Stop the whole sound (will also play it!) 
 
-**8.** To loop this, create a timer or use the `GameSeconds` to get the `StartingTime` and loop through it with a simple back going exec wire. Make sure to use a `Delay` (e.g. 0.01) so it won't result in a freeze!
+![](http://puu.sh/opYPr/e850f7baf0.jpg)
 
-![](http://i.imgur.com/awa4FMc.png)
+**7.1** The analyzed Frequency Spectrum will be returned via a second `Delegate | OnFrequencySpectrumCalculated`, which also comes with the Component.
 
-**9.** Now you can use the different frequency functions to get the values (for example if you want to get the values for bass, use 20 to 60 for SubBass and 60 to 250 for Bass. You can look up more on the internet.
+![](http://puu.sh/opYVk/aaf6479271.jpg)
 
-![](http://i.imgur.com/eIzA5Hh.jpg)
+**8.** Now you can use the different frequency functions to get the values (for example if you want to get the values for bass, use 20 to 60 for SubBass and 60 to 250 for Bass. You can look up more on the internet.
 
-**10.** The `SetHeight` function in the above example takes a `MaxRange` float value. This is used to normalize the Frequency Value from 0 to MaxRange to pack it into a 0 to 1.0 range.
+![](http://puu.sh/opYtT/ed734b2396.png)
 
-This is needed because these values will get **REALLY** big. The smaller the interval, the bigger the numbers!
+**11.** You can find all functions available by going to the SoundVis category. They are explained in the [`SoundVisComponent.h`](https://github.com/eXifreXi/eXiSoundVis/blob/4.11/Source/eXiSoundVis/Public/SoundVisComponent.h) if you don't know how to use them:
 
-**11.** You can find all functions available by going to the SoundVis category. They are explained in the [`SoundVisualisation.h`](https://github.com/eXifreXi/eXiSoundVis/blob/master/Source/eXiSoundVis/Classes/SoundVisualization.h) if you don't know how to use them:
-
-![](http://i.imgur.com/dBJqqWG.png)
+![](http://puu.sh/oqNUm/317177f03d.png)
 
 When cooking, make sure to add the plugin to your projects dependencies!
 
@@ -76,7 +74,11 @@ When cooking, make sure to add the plugin to your projects dependencies!
 Example project
 ---------------
 
+<<<<<<< HEAD
+4.11 Sound Test Map: [Hit me!](http://exi.bnslv.de/Downloads/SoundTest411.rar)
+=======
 Click [here](http://exi.bnslv.de/Downloads/Tutorial.rar)!
+>>>>>>> refs/remotes/origin/master
 
 
 License
