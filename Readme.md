@@ -74,7 +74,11 @@ When cooking, make sure to add the plugin to your projects dependencies!
 Example project
 ---------------
 
+<<<<<<< HEAD
 4.11 Sound Test Map: [Hit me!](http://exi.bnslv.de/Downloads/SoundTest411.rar)
+=======
+Click [here](http://exi.bnslv.de/Downloads/Tutorial.rar)!
+>>>>>>> refs/remotes/origin/master
 
 
 License
