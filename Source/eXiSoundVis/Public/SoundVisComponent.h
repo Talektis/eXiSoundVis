@@ -40,7 +40,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWorkerFinished, USoundWave*, SoundW
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFrequencySpectrumCalculated, const TArray<float>&, OutFrequencies);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), meta=(DisplayName = "SoundVisComponent") )
-class USoundVisComponent : public UActorComponent
+class EXISOUNDVIS_API USoundVisComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
