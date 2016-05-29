@@ -274,7 +274,14 @@ void USoundVisComponent::CalculateFrequencySpectrum(USoundWave* InSoundWaveRef, 
 					}
 				}
 
-				OutFrequencies[SampleIndex] = ChannelSum / NumChannels;
+				if (bNormalizeOutputToDb)
+				{
+					OutFrequencies[SampleIndex] = FMath::LogX(10, ChannelSum / NumChannels) * 10;
+				}
+				else
+				{
+					OutFrequencies[SampleIndex] = ChannelSum / NumChannels;
+				}
 			}
 
 			// Make sure to free up the FFT stuff
