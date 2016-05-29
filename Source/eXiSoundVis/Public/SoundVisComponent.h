@@ -74,6 +74,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SoundVis | Sound Player")
 		bool bPauseWhenWindowInBackground = true;
+		
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SoundVis | Sound Player")
+	bool bNormalizeOutputToDb = false;
 
 	/// Delegates
 
